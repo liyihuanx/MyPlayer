@@ -48,7 +48,7 @@ open class AbsPlayerView @JvmOverloads constructor(
      */
     var mPlayerEngine: AbsPlayerEngine
 
-    private var engineType = EngineType.MEDIA_PLAYER
+    private var engineType = EngineType.IJK_PLAYER
 
 
     init {
@@ -64,7 +64,7 @@ open class AbsPlayerView @JvmOverloads constructor(
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.customVideo)
             typedArray.apply {
-                val type = getInt(R.styleable.customVideo_engine, EngineType.MEDIA_PLAYER.type)
+                val type = getInt(R.styleable.customVideo_engine, EngineType.IJK_PLAYER.type)
                 when (type) {
                     EngineType.MEDIA_PLAYER.type -> {
                         engineType = EngineType.MEDIA_PLAYER
