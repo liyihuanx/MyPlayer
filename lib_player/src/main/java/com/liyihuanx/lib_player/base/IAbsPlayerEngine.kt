@@ -9,6 +9,11 @@ import android.view.SurfaceHolder
  * @Date: 2022/2/8 21:11
  */
 interface IAbsPlayerEngine {
+    fun getDuration(): Long
 
+
+    fun onPause()
+
+    fun onResume()
 
 }

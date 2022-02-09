@@ -14,6 +14,8 @@
         android:text="play"/>
 
 
+<!--    com.liyihuanx.lib_player.media.MediaPlayerView -->
+<!--    com.liyihuanx.lib_player.ijk.IjkPlayerView -->
     <com.liyihuanx.lib_player.ijk.IjkPlayerView
         android:id="@+id/ijkPlay"
         android:layout_width="match_parent"

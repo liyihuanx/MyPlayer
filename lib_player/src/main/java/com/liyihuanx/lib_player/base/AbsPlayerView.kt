@@ -28,19 +28,16 @@ open class AbsPlayerView @JvmOverloads constructor(
 
     private val surfaceCallback = object : SurfaceHolder.Callback {
         override fun surfaceCreated(p0: SurfaceHolder) {
-            Log.d("QWER", "surfaceCreated: ")
 
         }
 
         override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
-            Log.d("QWER", "surfaceChanged: ")
 
         }
 
         override fun surfaceDestroyed(p0: SurfaceHolder) {
-            Log.d("QWER", "surfaceDestroyed: ")
+            controller?.let { mPlayerEngine.removeVideoStatusListener(it) }
         }
-
     }
 
     /**
@@ -50,8 +47,22 @@ open class AbsPlayerView @JvmOverloads constructor(
 
     private var engineType = EngineType.IJK_PLAYER
 
+    var controller: AbsController? = null
+        set(value) {
+            field = value
+
+            if (value != null) {
+                mPlayerEngine.addVideoStatusListener(value)
+                value.attach(this)
+                // 添加视频播放器的布局
+                this.addView(value.getView())
+            }
+
+
+        }
 
     init {
+        // 添加视频播放布局
         mSurfaceView = SurfaceView(context).also {
             it.holder.addCallback(surfaceCallback)
 
@@ -60,6 +71,9 @@ open class AbsPlayerView @JvmOverloads constructor(
             it.layoutParams = layoutParams
             this.addView(it)
         }
+
+        // 可做判断决定添不添加controller
+//        this.addView(DefaultController(context).getView())
 
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(attrs, R.styleable.customVideo)
@@ -91,8 +105,6 @@ open class AbsPlayerView @JvmOverloads constructor(
 
         // 创建引擎
         mPlayerEngine = EngineFactory.createEngine(engineType)
-        // 设置播放的view
-        mPlayerEngine.setDisplayView(mSurfaceView)
     }
 
 
@@ -100,8 +112,22 @@ open class AbsPlayerView @JvmOverloads constructor(
      * 播放视频
      */
     fun playVideoPath(path: String) {
+        // 设置播放的view
+        mPlayerEngine.setDisplayView(mSurfaceView)
         mPlayerEngine.dealVideoPath(path)
     }
 
 
+    // 要写一个方法给外界，然后再去调用引擎的方法
+    override fun getDuration(): Long {
+        return mPlayerEngine.getDuration()
+    }
+
+    override fun onPause() {
+        mPlayerEngine.onPause()
+    }
+
+    override fun onResume() {
+        mPlayerEngine.onResume()
+    }
 }

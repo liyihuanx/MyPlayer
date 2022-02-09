@@ -69,16 +69,4 @@ class MediaExamplePlayer @JvmOverloads constructor(
 
     }
 
-
-    fun setVideoPath(path: String) {
-        mMediaPlayer.play(path)
-    }
-
-
-
-
-
-
-
-
 }

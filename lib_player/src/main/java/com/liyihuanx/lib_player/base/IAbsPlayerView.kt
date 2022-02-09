@@ -8,10 +8,7 @@ import android.view.SurfaceHolder
  * @Author: liyihuan
  * @Date: 2022/2/8 22:10
  */
-interface IAbsPlayerView {
-
-
-
+interface IAbsPlayerView : IAbsPlayerEngine {
 
 
 }

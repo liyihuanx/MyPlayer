@@ -1,0 +1,31 @@
+1.引擎：有视频事件的回调和所有信息
+2.视频View：展示视频和控制器view
+3.控制器view：操作引擎获取信息
+
+三者的关系
+
+视频view  --持有-->  基础引擎，基础控制器
+
+控制器想要获取视频的信息 --> 要通过基础引擎 --> 精确引擎
+
+那就给控制器赋值一个引擎
+
+最后三者的关系就是,感觉耦合性很高
+
+         引擎
+          |
+--------------------
+|                  | --> 如果这里可以断开就好 --> 用注册器的方式，把IController注解进来，然后把所有方法回调出去？
+视频View -------> 控制器view
+
+
+
+
+用户-->
+    player#setUpVideoPath(path,preLoad) -->
+        AbsEngine#setup() -->
+            ijk/native#setup() --> preLoad = true --> openMedia() --> onPrepared() --> playBlock().invoke --> Engine.start()
+                               --> preLoad = false --> 用户#startPlay() --> openMedia()......
+
+openMedia() --> 设置引擎和数据,做clean/reset等操作，最主要是
+playBlock() --> 设置surfaceView

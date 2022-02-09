@@ -28,21 +28,6 @@ class MediaPlayerEngine : AbsPlayerEngine() {
         }
     }
 
-    fun setDisplay(holder: SurfaceHolder) {
-
-    }
-
-    fun play(mPath: String) {
-        // 重置
-//        mMediaPlayer.stop()
-//        mMediaPlayer.reset()
-
-//        // 设置视图
-//        mMediaPlayer.setDisplay(holder)
-
-
-    }
-
 
     override fun dealVideoPath(path: String) {
         mMediaPlayer.setDataSource(path)
@@ -54,8 +39,17 @@ class MediaPlayerEngine : AbsPlayerEngine() {
         mMediaPlayer.setDisplay(surfaceView.holder)
     }
 
+    override fun getDuration(): Long {
+        return mMediaPlayer.duration.toLong()
+    }
 
+    override fun onPause() {
 
+    }
+
+    override fun onResume() {
+
+    }
 
 
     private val allMediaPlayerListener = object : MediaPlayerListener {
