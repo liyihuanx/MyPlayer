@@ -12,9 +12,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ijkPlay.controller = DefaultController(this)
+        ijkPlay.setPath("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",false)
 
         btnPlay.setOnClickListener {
-            ijkPlay.playVideoPath("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
+            ijkPlay.startPlay()
+//            ijkPlay.playVideoPath("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4")
 //            ijkPlay.playVideoPath("https://media.w3.org/2010/05/sintel/trailer.mp4")
 //            ijkPlay.playVideoPath("http://v-cdn.zjol.com.cn/280443.mp4")
         }

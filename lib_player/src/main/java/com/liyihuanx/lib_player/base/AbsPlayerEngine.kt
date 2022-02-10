@@ -44,9 +44,12 @@ abstract class AbsPlayerEngine : IAbsPlayerEngine {
         }
     }
 
+    override fun getCurrentStatus(): Int {
+        return mCurrentState
+    }
 
 
-    abstract fun dealVideoPath(path: String)
     abstract fun setDisplayView(surfaceView: SurfaceView)
 
+    abstract var playMethod: (() -> Unit)
 }

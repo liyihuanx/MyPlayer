@@ -36,7 +36,10 @@ open class AbsPlayerView @JvmOverloads constructor(
         }
 
         override fun surfaceDestroyed(p0: SurfaceHolder) {
-            controller?.let { mPlayerEngine.removeVideoStatusListener(it) }
+            controller?.let {
+                mPlayerEngine.removeVideoStatusListener(it)
+                it.detach()
+            }
         }
     }
 
@@ -105,18 +108,25 @@ open class AbsPlayerView @JvmOverloads constructor(
 
         // 创建引擎
         mPlayerEngine = EngineFactory.createEngine(engineType)
-    }
 
-
-    /**
-     * 播放视频
-     */
-    fun playVideoPath(path: String) {
-        // 设置播放的view
         mPlayerEngine.setDisplayView(mSurfaceView)
-        mPlayerEngine.dealVideoPath(path)
     }
 
+
+
+    override fun setPath(path: String, isPreload: Boolean, isAutoPlay: Boolean) {
+        mPlayerEngine.setPath(path, isPreload, isAutoPlay)
+    }
+
+    override fun openMedia() {
+        mPlayerEngine.openMedia()
+    }
+
+
+
+    override fun startPlay() {
+        mPlayerEngine.startPlay()
+    }
 
     // 要写一个方法给外界，然后再去调用引擎的方法
     override fun getDuration(): Long {
@@ -129,5 +139,9 @@ open class AbsPlayerView @JvmOverloads constructor(
 
     override fun onResume() {
         mPlayerEngine.onResume()
+    }
+
+    override fun getCurrentStatus(): Int {
+        return mPlayerEngine.getCurrentStatus()
     }
 }

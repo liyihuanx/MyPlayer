@@ -29,14 +29,27 @@ class MediaPlayerEngine : AbsPlayerEngine() {
     }
 
 
-    override fun dealVideoPath(path: String) {
-        mMediaPlayer.setDataSource(path)
-        mMediaPlayer.prepareAsync()
-    }
 
     override fun setDisplayView(surfaceView: SurfaceView) {
         // 设置视图
         mMediaPlayer.setDisplay(surfaceView.holder)
+    }
+
+    override var playMethod: () -> Unit = {
+
+    }
+
+    override fun setPath(path: String, isPreload: Boolean, isAutoPlay: Boolean) {
+
+    }
+
+
+    override fun openMedia() {
+
+    }
+
+    override fun startPlay() {
+
     }
 
     override fun getDuration(): Long {

@@ -21,8 +21,7 @@ abstract class AbsController(private val context: Context) : IController, IVideo
     private var rootView: View? = null
 
     // 视频播放器
-    var mPlayer: IAbsPlayerView? = null
-
+    lateinit var mPlayer: IAbsPlayerView
 
     override fun getView(): View? {
         if (getCoverLayout() != null) {
