@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.SurfaceView
 import com.liyihuanx.lib_player.base.AbsPlayerEngine
 import com.liyihuanx.lib_player.status.VideoStatus
+import com.liyihuanx.lib_player.widget.PlayerSurfaceView
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 import tv.danmaku.ijk.media.player.IjkTimedText
@@ -22,6 +23,7 @@ class IjkPlayerEngine : AbsPlayerEngine() {
      */
     private val ijkMediaPlayer: IjkMediaPlayer by lazy {
         IjkMediaPlayer().apply {
+//            http://superdanny.link/2017/05/09/iOS-IJKPlayer/
 //            https://www.jianshu.com/p/843c86a9e9ad?from=singlemessage
 //            setOption(1, "analyzemaxduration", 100L)
 //            setOption(1, "probesize", 10240L)
@@ -41,6 +43,11 @@ class IjkPlayerEngine : AbsPlayerEngine() {
 //            setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "min-frames", 100)
 //            setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1)
 //            setVolume(1.0f, 1.0f)
+
+            // 设置播放前的最大探测时间
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT,"analyzeduration",1);
+            // 播放前的探测Size，默认是1M, 改小一点会出画面更快
+            setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024 * 5L);
 
             // 开启硬解码
             setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
@@ -66,7 +73,7 @@ class IjkPlayerEngine : AbsPlayerEngine() {
 
     }
 
-    private var tempSurfaceView: SurfaceView? = null
+    private var tempSurfaceView: PlayerSurfaceView? = null
 
     private var isUsePreLoad: Boolean = false
     private var isUseAutoPlay: Boolean = false
@@ -74,7 +81,7 @@ class IjkPlayerEngine : AbsPlayerEngine() {
     private var mPath: String = ""
 
 
-    override fun setDisplayView(surfaceView: SurfaceView) {
+    override fun setDisplayView(surfaceView: PlayerSurfaceView) {
         // 设置承载视频播放的布局
 //        ijkMediaPlayer.setDisplay(surfaceView.holder)
         // 保存一份复用
@@ -87,7 +94,7 @@ class IjkPlayerEngine : AbsPlayerEngine() {
         statusDispatch.onStatusChange(VideoStatus.STATE_PLAYING)
     }
 
-    override fun setPath(path: String, isPreload: Boolean, isAutoPlay: Boolean) {
+    override fun setPath(path: String,cover: String, isPreload: Boolean, isAutoPlay: Boolean) {
         mPath = path
         // 加载完是否播放
         isUseAutoPlay = isAutoPlay
@@ -111,6 +118,7 @@ class IjkPlayerEngine : AbsPlayerEngine() {
         ijkMediaPlayer.dataSource = mPath
         ijkMediaPlayer.setDisplay(tempSurfaceView!!.holder)
         ijkMediaPlayer.prepareAsync()
+
     }
 
 
@@ -134,6 +142,17 @@ class IjkPlayerEngine : AbsPlayerEngine() {
         return ijkMediaPlayer.duration
     }
 
+    override fun getCurrentDuration(): Long {
+        return ijkMediaPlayer.currentPosition
+    }
+
+    override fun getVideoHeight(): Int {
+        return ijkMediaPlayer.videoHeight
+    }
+
+    override fun getVideoWidth(): Int {
+        return ijkMediaPlayer.videoWidth
+    }
 
     /**
      * ijk视频播放的回调
@@ -165,8 +184,13 @@ class IjkPlayerEngine : AbsPlayerEngine() {
             statusDispatch.onStatusChange(VideoStatus.STATE_COMPLETED)
         }
 
-        override fun onBufferingUpdate(p0: IMediaPlayer?, p1: Int) {
-
+        override fun onBufferingUpdate(p0: IMediaPlayer?, bufferNum: Int) {
+            // 缓冲的值到不了100，有时候98，有时99
+            mCurrentBufferPercentage = if (bufferNum > 95) {
+                100
+            } else {
+                bufferNum
+            }
         }
 
         override fun onSeekComplete(p0: IMediaPlayer?) {
@@ -200,12 +224,29 @@ class IjkPlayerEngine : AbsPlayerEngine() {
             IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> {
                 Log.d("QWER", "info - 视频渲染: ")
             }
-            // 缓冲
+            // 播放的缓冲
             IMediaPlayer.MEDIA_INFO_BUFFERING_START -> {
-                Log.d("QWER", "info - 缓冲: ")
+                // 缓冲中暂停了
+                if (mCurrentState == VideoStatus.STATE_PAUSED || mCurrentState == VideoStatus.STATE_BUFFERING_PAUSED) {
+                    statusDispatch.onStatusChange(VideoStatus.STATE_BUFFERING_PAUSED)
+                    Log.d("QWER", "info - 暂停缓冲: ")
+                } else {
+                    statusDispatch.onStatusChange(VideoStatus.STATE_BUFFERING_PLAYING)
+                    Log.d("QWER", "info - 边播放边缓冲: ")
+                }
             }
+            // 缓冲完成继续播放
             IMediaPlayer.MEDIA_INFO_BUFFERING_END -> {
+                // 填充缓冲区后，IMediaPlayer恢复播放/暂停
+                if (mCurrentState == VideoStatus.STATE_BUFFERING_PLAYING) {
+                    statusDispatch.onStatusChange(VideoStatus.STATE_PLAYING)
+                    Log.d("QWER", "info - 边播放边缓冲结束，播放中: ")
 
+                }
+                if (mCurrentState == VideoStatus.STATE_BUFFERING_PAUSED) {
+                    statusDispatch.onStatusChange(VideoStatus.STATE_PAUSED)
+                    Log.d("QWER", "info - 暂停缓冲冲结束，暂停了，要手动继续播放的: ")
+                }
             }
         }
     }
@@ -221,6 +262,13 @@ class IjkPlayerEngine : AbsPlayerEngine() {
         if (mCurrentState == VideoStatus.STATE_PAUSED || mCurrentState == VideoStatus.STATE_STOP) {
             ijkMediaPlayer.start()
             statusDispatch.onStatusChange(VideoStatus.STATE_PLAYING)
+        } else if (mCurrentState == VideoStatus.STATE_BUFFERING_PAUSED) {
+            ijkMediaPlayer.start()
+            statusDispatch.onStatusChange(VideoStatus.STATE_BUFFERING_PLAYING)
+        } else if (mCurrentState == VideoStatus.STATE_COMPLETED || mCurrentState == VideoStatus.STATE_ERROR) {
+            // reset后，setOption的参数也会重置，会导致一些问题，咋办呢
+            ijkMediaPlayer.reset()
+            openMedia()
         }
     }
 

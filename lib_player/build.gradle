@@ -49,4 +49,10 @@ dependencies {
     implementation 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
     // ExoPlayer as IMediaPlayer: optional, experimental
     implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
+
+    // 协程
+//    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0"
+
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+
 }

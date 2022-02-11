@@ -1,5 +1,7 @@
 package com.liyihuanx.lib_player.utils
 
+import android.content.res.Resources
+import android.util.DisplayMetrics
 import java.lang.StringBuilder
 import java.util.*
 
@@ -32,4 +34,39 @@ object PlayerUtil {
             mFormatter.format("%02d:%02d", minutes, seconds).toString()
         }
     }
+
+
+    /**
+     * 得到设备屏幕的宽度
+     */
+    fun getScreenWidth(): Int {
+        return getScreenSize()[0]
+    }
+
+    /**
+     * 得到设备屏幕的高度
+     */
+    fun getScreenHeight(): Int {
+        return getScreenSize()[1]
+    }
+
+    /**
+     * 获取屏幕尺寸
+     *
+     * @return 数组 0：宽度， 1：高度
+     */
+    private fun getScreenSize(): IntArray {
+        val displayMetrics = getDisplayMetrics()
+        return intArrayOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
+    }
+
+    /**
+     * 获取屏幕尺寸与密度.
+     *
+     * @return mDisplayMetrics
+     */
+    private fun getDisplayMetrics(): DisplayMetrics {
+        return Resources.getSystem().displayMetrics
+    }
+
 }

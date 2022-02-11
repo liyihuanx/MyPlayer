@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.liyihuanx.lib_player.base.AbsPlayerEngine
+import com.liyihuanx.lib_player.widget.PlayerSurfaceView
 
 /**
  * @author liyihuan
@@ -30,7 +31,7 @@ class MediaPlayerEngine : AbsPlayerEngine() {
 
 
 
-    override fun setDisplayView(surfaceView: SurfaceView) {
+    override fun setDisplayView(surfaceView: PlayerSurfaceView) {
         // 设置视图
         mMediaPlayer.setDisplay(surfaceView.holder)
     }
@@ -39,7 +40,7 @@ class MediaPlayerEngine : AbsPlayerEngine() {
 
     }
 
-    override fun setPath(path: String, isPreload: Boolean, isAutoPlay: Boolean) {
+    override fun setPath(path: String,cover: String, isPreload: Boolean, isAutoPlay: Boolean) {
 
     }
 
@@ -55,6 +56,19 @@ class MediaPlayerEngine : AbsPlayerEngine() {
     override fun getDuration(): Long {
         return mMediaPlayer.duration.toLong()
     }
+
+    override fun getCurrentDuration(): Long {
+        return mMediaPlayer.currentPosition.toLong()
+    }
+
+    override fun getVideoHeight(): Int {
+        return mMediaPlayer.videoHeight
+    }
+
+    override fun getVideoWidth(): Int {
+        return mMediaPlayer.videoWidth
+    }
+
 
     override fun onPause() {
 

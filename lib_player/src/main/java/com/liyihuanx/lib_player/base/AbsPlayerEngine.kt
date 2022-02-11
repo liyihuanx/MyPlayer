@@ -4,6 +4,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.liyihuanx.lib_player.status.IVideoStatusListener
 import com.liyihuanx.lib_player.status.VideoStatus
+import com.liyihuanx.lib_player.widget.PlayerSurfaceView
 
 /**
  * @author liyihuan
@@ -15,6 +16,7 @@ abstract class AbsPlayerEngine : IAbsPlayerEngine {
 
     protected var mCurrentState = VideoStatus.STATE_IDLE
 
+    var mCurrentBufferPercentage = 0
     /**
      * 状态分发
      */
@@ -48,8 +50,16 @@ abstract class AbsPlayerEngine : IAbsPlayerEngine {
         return mCurrentState
     }
 
+    override fun getCurrentBufferPercentage(): Int {
+        return mCurrentBufferPercentage
+    }
 
-    abstract fun setDisplayView(surfaceView: SurfaceView)
+
+    abstract fun setDisplayView(surfaceView: PlayerSurfaceView)
+
+    abstract fun getVideoWidth():Int
+    abstract fun getVideoHeight():Int
+
 
     abstract var playMethod: (() -> Unit)
 }

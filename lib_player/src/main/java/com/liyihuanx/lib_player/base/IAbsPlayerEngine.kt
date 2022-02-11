@@ -11,7 +11,12 @@ import android.view.SurfaceView
  */
 interface IAbsPlayerEngine {
 
-    fun setPath(path: String, isPreload: Boolean = true, isAutoPlay: Boolean = false)
+    fun setPath(
+        path: String,
+        cover: String = "",
+        isPreload: Boolean = true,
+        isAutoPlay: Boolean = false,
+    )
 
     fun openMedia()
 
@@ -20,10 +25,15 @@ interface IAbsPlayerEngine {
 
     fun getDuration(): Long
 
+    fun getCurrentDuration():Long
+
+    fun getCurrentBufferPercentage(): Int
+
     fun onPause()
 
     fun onResume()
 
     fun getCurrentStatus(): Int
+
 
 }
